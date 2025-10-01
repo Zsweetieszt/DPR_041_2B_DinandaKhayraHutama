@@ -4,6 +4,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\KomponenGajiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,10 +31,17 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
     // CRUD Anggota DPR
-    // FIX KRITIS: Mendefinisikan nama parameter resource secara eksplisit
     Route::resource('anggota', AnggotaController::class)->except(['show'])->parameters([
-        'anggota' => 'anggota' // Memastikan parameter di URL adalah {anggota}
+        'anggota' => 'anggota'
     ]);
+
+    // KELOLA KOMPONEN GAJI
+    Route::prefix('komponen-gaji')->name('komponen.')->group(function () {
+        Route::get('/', [KomponenGajiController::class, 'index'])->name('index');
+        Route::get('/create', [KomponenGajiController::class, 'create'])->name('create');
+        Route::post('/', [KomponenGajiController::class, 'store'])->name('store');
+        // Edit, Update, Destroy akan ditambahkan di commit berikutnya
+    });
 });
 
 
@@ -48,5 +56,5 @@ Route::middleware(['auth', 'role:Public'])->prefix('public')->name('public.')->g
 
     // Read Only Anggota DPR
     Route::get('/anggota', [AnggotaController::class, 'publicIndex'])->name('anggota.index');
-    Route::get('/anggota/{anggota}', [AnggotaController::class, 'show'])->name('anggota.show'); // Detail View
+    Route::get('/anggota/{anggota}', [AnggotaController::class, 'show'])->name('anggota.show');
 });

@@ -71,7 +71,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-<div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     @auth
                         @if(auth()->user()->role === 'Admin')
@@ -80,10 +80,22 @@
                                     <i class="bi bi-speedometer2"></i> Dashboard
                                 </a>
                             </li>
-                            <!-- Menu Admin -->
+                            <!-- Menu Admin 1: Kelola Anggota -->
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('admin.anggota.*') ? 'active' : '' }}" href="{{ route('admin.anggota.index') }}">
                                     <i class="fas fa-users-cog"></i> Kelola Anggota
+                                </a>
+                            </li>
+                            <!-- Menu Admin 2: Kelola Komponen Gaji -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('admin.komponen.*') ? 'active' : '' }}" href="{{ route('admin.komponen.index') }}">
+                                    <i class="fas fa-list-alt"></i> Kelola Komponen Gaji
+                                </a>
+                            </li>
+                            <!-- Menu Admin 3: Kelola Penggajian (Placeholder) -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('admin.penggajian.*') ? 'active' : '' }}" href="#">
+                                    <i class="fas fa-calculator"></i> Kelola Penggajian
                                 </a>
                             </li>
                         @elseif(auth()->user()->role === 'Public')
@@ -98,7 +110,12 @@
                                     <i class="fas fa-address-card"></i> Data Anggota
                                 </a>
                             </li>
-                            <!-- Menu Public akan ditambahkan di sini -->
+                            <!-- Menu Public: Data Gaji (Placeholder) -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('public.gaji.index') ? 'active' : '' }}" href="#">
+                                    <i class="fas fa-dollar-sign"></i> Transparansi Gaji
+                                </a>
+                            </li>
                         @endif
                     @endauth
                 </ul>
