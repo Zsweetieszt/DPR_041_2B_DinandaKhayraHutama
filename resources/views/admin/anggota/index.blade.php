@@ -51,7 +51,14 @@
                             <a href="{{ route('admin.anggota.edit', ['anggota' => $item->id_anggota]) }}" class="btn btn-sm btn-warning me-1" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-
+                            {{-- PERBAIKAN 2: Menggunakan array asosiatif untuk parameter 'anggota' di form destroy --}}
+                            <form action="{{ route('admin.anggota.destroy', ['anggota' => $item->id_anggota]) }}" method="POST" class="d-inline form-delete-anggota" data-nama="{{ $item->nama_lengkap }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
