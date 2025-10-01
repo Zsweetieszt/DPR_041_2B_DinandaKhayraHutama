@@ -30,7 +30,10 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
     // CRUD Anggota DPR
-    Route::resource('anggota', AnggotaController::class)->except(['show']);
+    // FIX KRITIS: Mendefinisikan nama parameter resource secara eksplisit
+    Route::resource('anggota', AnggotaController::class)->except(['show'])->parameters([
+        'anggota' => 'anggota' // Memastikan parameter di URL adalah {anggota}
+    ]);
 });
 
 

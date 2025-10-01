@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', 'Edit Anggota DPR')
@@ -21,9 +22,10 @@
                     </div>
                 @endif
                 
-                <form id="edit-anggota-form" method="POST" action="{{ route('admin.anggota.update', $anggota->id_anggota) }}" novalidate>
+                {{-- PERBAIKAN: Menggunakan array asosiatif untuk parameter 'anggota' --}}
+                <form id="edit-anggota-form" method="POST" action="{{ route('admin.anggota.update', ['anggota' => $anggota->id_anggota]) }}" novalidate>
                     @csrf
-                    @method('PUT')
+                    @method('PUT') 
                     
                     <div class="row">
                         <div class="col-md-4 mb-3">
@@ -65,7 +67,7 @@
                             <label for="gelar_belakang" class="form-label">Gelar Belakang (Opsional)</label>
                             <input type="text" name="gelar_belakang" class="form-control" id="gelar_belakang" value="{{ old('gelar_belakang', $anggota->gelar_belakang) }}">
                         </div>
-                        <div class="col-md-5 mb-3">
+                        <div class="col-md-9 mb-3">
                             <label for="status_pernikahan" class="form-label">Status Pernikahan</label>
                             <select name="status_pernikahan" class="form-select @error('status_pernikahan') is-invalid @enderror" id="status_pernikahan" required>
                                 <option value="">-- Pilih Status --</option>
@@ -74,11 +76,6 @@
                                 @endforeach
                             </select>
                             @error('status_pernikahan')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="jumlah_anak" class="form-label">Jumlah Anak (Opsional)</label>
-                            <input type="number" name="jumlah_anak" class="form-control @error('jumlah_anak') is-invalid @enderror" id="jumlah_anak" value="{{ old('jumlah_anak', $anggota->jumlah_anak ?? 0) }}" min="0" max="15">
-                            @error('jumlah_anak')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
@@ -113,25 +110,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 input.classList.add('is-invalid');
                 let feedback = document.createElement('div');
                 feedback.className = 'invalid-feedback';
-                feedback.textContent = `Kolom ${input.labels[0].textContent.replace(' (Opsional)', '').toLowerCase()} wajib diisi.`;
+                let labelText = input.labels[0] ? input.labels[0].textContent : fieldName;
+                feedback.textContent = `Kolom ${labelText.replace(' (Opsional)', '').toLowerCase()} wajib diisi.`;
                 input.parentNode.appendChild(feedback);
                 isValid = false;
             }
         });
-        
-        // Validasi khusus Jumlah Anak (hanya jika ada nilainya)
-        const jumlahAnakInput = document.getElementById('jumlah_anak');
-        if (jumlahAnakInput.value.trim() !== '') {
-            const val = parseInt(jumlahAnakInput.value);
-            if (isNaN(val) || val < 0 || val > 15) {
-                jumlahAnakInput.classList.add('is-invalid');
-                let feedback = document.createElement('div');
-                feedback.className = 'invalid-feedback';
-                feedback.textContent = 'Jumlah anak harus angka antara 0 dan 15.';
-                jumlahAnakInput.parentNode.appendChild(feedback);
-                isValid = false;
-            }
-        }
 
         if (!isValid) {
             e.preventDefault();
