@@ -111,4 +111,11 @@ class AnggotaController extends Controller
 
         return redirect()->route('admin.anggota.index')->with('success', 'Data Anggota DPR berhasil diperbarui.');
     }
+
+    // [ADMIN ONLY] Menghapus data anggota dari database (Delete)
+    public function destroy(Anggota $anggota)
+    {
+        $anggota->delete();
+        return redirect()->route('admin.anggota.index')->with('success', 'Anggota DPR berhasil dihapus.');
+    }
 }

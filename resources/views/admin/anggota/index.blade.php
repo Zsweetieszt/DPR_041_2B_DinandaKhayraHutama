@@ -51,6 +51,7 @@
                             <a href="{{ route('admin.anggota.edit', ['anggota' => $item->id_anggota]) }}" class="btn btn-sm btn-warning me-1" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
+
                         </td>
                     </tr>
                 @endforeach
@@ -64,3 +65,23 @@
 
 @endsection
 
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Delete confirmation
+    document.querySelectorAll('.form-delete-anggota').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const namaAnggota = this.getAttribute('data-nama');
+            
+            // Delete confirmation dialog
+            const confirmed = confirm(`Apakah Anda yakin ingin menghapus Anggota DPR:\n"${namaAnggota}"?`);
+            
+            if (confirmed) {
+                this.submit();
+            }
+        });
+    });
+});
+</script>
+@endsection
