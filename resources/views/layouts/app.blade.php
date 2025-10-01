@@ -71,7 +71,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
+<div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     @auth
                         @if(auth()->user()->role === 'Admin')
@@ -80,16 +80,30 @@
                                     <i class="bi bi-speedometer2"></i> Dashboard
                                 </a>
                             </li>
-                            @elseif(auth()->user()->role === 'Public')
+                            <!-- Menu Admin -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('admin.anggota.*') ? 'active' : '' }}" href="{{ route('admin.anggota.index') }}">
+                                    <i class="fas fa-users-cog"></i> Kelola Anggota
+                                </a>
+                            </li>
+                        @elseif(auth()->user()->role === 'Public')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('public.dashboard') ? 'active' : '' }}" href="{{ route('public.dashboard') }}">
                                     <i class="bi bi-speedometer2"></i> Dashboard
                                 </a>
                             </li>
-                            @endif
+                            <!-- Menu Public -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('public.anggota.index') || request()->routeIs('public.anggota.show') ? 'active' : '' }}" href="{{ route('public.anggota.index') }}">
+                                    <i class="fas fa-address-card"></i> Data Anggota
+                                </a>
+                            </li>
+                            <!-- Menu Public akan ditambahkan di sini -->
+                        @endif
                     @endauth
                 </ul>
-
+                
+                <!-- ... (Dropdown User tetap) ... -->
                 <ul class="navbar-nav ms-auto">
                     @auth
                         <li class="nav-item dropdown">

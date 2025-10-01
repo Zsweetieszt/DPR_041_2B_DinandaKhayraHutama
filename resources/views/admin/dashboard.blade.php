@@ -10,7 +10,7 @@
         <p class="lead">Gunakan menu navigasi untuk mengelola data Anggota DPR, Komponen Gaji, dan Data Penggajian.</p>
         <hr class="my-4">
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <a href="#" class="btn btn-danger btn-lg px-4 me-sm-3">
+            <a href="{{ route('admin.anggota.index') }}" class="btn btn-danger btn-lg px-4 me-sm-3">
                 <i class="fas fa-users-cog me-2"></i> Kelola Anggota
             </a>
             <a href="#" class="btn btn-outline-secondary btn-lg px-4">

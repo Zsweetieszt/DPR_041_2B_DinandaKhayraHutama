@@ -3,6 +3,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AnggotaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard (landing page setelah login Admin)
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+
+    // CRUD Anggota DPR
+    Route::resource('anggota', AnggotaController::class)->except(['show']);
 });
 
 
@@ -38,4 +42,8 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:Public'])->prefix('public')->name('public.')->group(function () {
     // Dashboard (landing page setelah login Public)
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+
+    // Read Only Anggota DPR
+    Route::get('/anggota', [AnggotaController::class, 'publicIndex'])->name('anggota.index');
+    Route::get('/anggota/{anggota}', [AnggotaController::class, 'show'])->name('anggota.show'); // Detail View
 });
