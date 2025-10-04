@@ -17,6 +17,8 @@
     <div class="card-body">
         <form action="{{ route('admin.penggajian.store') }}" method="POST">
             @csrf
+
+            {{-- Anggota DPR (Dropdown/Select) --}}
             <div class="mb-4">
                 <label for="id_anggota" class="form-label fw-bold">Pilih Anggota DPR <span class="text-danger">*</span></label>
                 <select class="form-select @error('id_anggota') is-invalid @enderror" id="id_anggota" name="id_anggota" required>
@@ -36,7 +38,7 @@
             <div class="mb-4 p-3 border rounded">
                 <label class="form-label fw-bold d-block mb-3">Pilih Komponen Gaji yang akan Ditambahkan <span class="text-danger">*</span></label>
                 
-                {{-- COUNTER --}}
+                {{-- Keterangan komponen gaji terpilih --}}
                 <p class="text-muted small">Total komponen gaji terpilih: <strong id="selected-count">0</strong></p>
                 
                 {{-- Error validation untuk checkbox --}}
@@ -44,45 +46,18 @@
                     <div class="alert alert-danger p-2">{{ $message }}</div>
                 @enderror
 
-                @php
-                    $grouped_komponen = $komponen_gaji->groupBy('kategori'); 
-                    $old_komponen = old('id_komponen_gaji', []);
-                @endphp
-
+                {{-- Kontainer Checkbox yang akan diupdate via AJAX --}}
                 <div class="row" id="komponen-checkbox-container">
-                    @foreach($grouped_komponen as $kategori => $list_komponen)
-                        <div class="col-md-4 mb-3">
-                            <div class="card border-danger">
-                                <div class="card-header bg-danger text-white p-2">
-                                    <h6 class="mb-0">{{ $kategori }}</h6>
-                                </div>
-                                <div class="card-body p-2" style="max-height: 250px; overflow-y: auto;">
-                                    @foreach($list_komponen as $komponen)
-                                        @php
-                                            $isChecked = in_array($komponen->id_komponen_gaji, $old_komponen);
-                                        @endphp
-                                        <div class="form-check mb-1">
-                                            <input class="form-check-input komponen-checkbox" type="checkbox" 
-                                                name="id_komponen_gaji[]" 
-                                                value="{{ $komponen->id_komponen_gaji }}" 
-                                                id="komponen_{{ $komponen->id_komponen_gaji }}"
-                                                {{ $isChecked ? 'checked' : '' }}>
-                                            <label class="form-check-label small" for="komponen_{{ $komponen->id_komponen_gaji }}">
-                                                {{ $komponen->nama_komponen }} 
-                                                ({{ $komponen->nilai_tetap_formatted }} / {{ $komponen->satuan }})
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
+                    {{-- Pesan Awal / Placeholder --}}
+                    <div class="col-12" id="initial-message">
+                        <p class="text-center text-secondary">Silakan pilih Anggota DPR terlebih dahulu untuk menampilkan komponen gaji yang belum dialokasikan.</p>
+                    </div>
                 </div>
-            </div> 
+            </div>
 
             <hr>
             
-            <button type="submit" class="btn btn-danger btn-lg me-2">
+            <button type="submit" class="btn btn-danger btn-lg me-2" id="submit-button" disabled>
                 <i class="fas fa-save me-2"></i> Simpan Data Penggajian
             </button>
             <a href="{{ route('admin.penggajian.index') }}" class="btn btn-secondary btn-lg">
@@ -97,24 +72,116 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const checkboxes = document.querySelectorAll('.komponen-checkbox');
+    const anggotaSelect = document.getElementById('id_anggota');
+    const checkboxContainer = document.getElementById('komponen-checkbox-container');
     const selectedCountSpan = document.getElementById('selected-count');
-
+    const submitButton = document.getElementById('submit-button');
+    
+    // Fungsi untuk mengupdate counter dan status tombol Submit
     function updateSelectedCount() {
-        // Hitung berapa banyak checkbox yang dicentang
-        const checkedCount = document.querySelectorAll('.komponen-checkbox:checked').length;
-        
-        // Update tampilan
+        const checkedCount = checkboxContainer.querySelectorAll('.komponen-checkbox:checked').length;
         selectedCountSpan.textContent = checkedCount;
+        
+        // Aktifkan tombol Submit hanya jika ada komponen yang dipilih DAN Anggota sudah dipilih
+        submitButton.disabled = checkedCount === 0 || !anggotaSelect.value;
     }
 
-    // Tambahkan event listener untuk setiap checkbox
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateSelectedCount);
+    // Fungsi untuk merender checkbox dari data JSON
+    function renderCheckboxes(groupedKomponen) {
+        let html = '';
+        
+        for (const kategori in groupedKomponen) {
+            if (groupedKomponen.hasOwnProperty(kategori)) {
+                const list_komponen = groupedKomponen[kategori];
+                
+                html += `<div class="col-md-4 mb-3">
+                            <div class="card border-danger">
+                                <div class="card-header bg-danger text-white p-2">
+                                    <h6 class="mb-0">${kategori}</h6>
+                                </div>
+                                <div class="card-body p-2" style="max-height: 250px; overflow-y: auto;">`;
+                
+                list_komponen.forEach(komponen => {
+                    const formattedJumlah = new Intl.NumberFormat('id-ID').format(komponen.nominal);
+                    
+                    html += `<div class="form-check mb-1">
+                                <input class="form-check-input komponen-checkbox" type="checkbox" 
+                                    name="id_komponen_gaji[]" 
+                                    value="${komponen.id_komponen_gaji}" 
+                                    id="komponen_${komponen.id_komponen_gaji}">
+                                <label class="form-check-label small" for="komponen_${komponen.id_komponen_gaji}">
+                                    ${komponen.nama_komponen} 
+                                    {{-- [PERBAIKAN 2]: Menggunakan 'satuan' (kolom DB yang menyimpan satuan) --}}
+                                    (Rp ${formattedJumlah} / ${komponen.satuan})
+                                </label>
+                            </div>`;
+                });
+
+                html += `       </div>
+                            </div>
+                        </div>`;
+            }
+        }
+        
+        return html;
+    }
+
+    // Fungsi untuk mengambil data via AJAX
+    function fetchUnassignedKomponen(idAnggota) {
+        // Tampilkan loading state
+        checkboxContainer.innerHTML = `<div class="col-12 text-center text-primary"><i class="fas fa-spinner fa-spin me-2"></i>Memuat Komponen Gaji...</div>`;
+        selectedCountSpan.textContent = '0';
+        submitButton.disabled = true; 
+
+        // URL AJAX menggunakan rute yang sudah dibuat
+        const url = `{{ route('admin.penggajian.get-komponen-unassigned', ['id_anggota' => 'ID_PLACEHOLDER']) }}`.replace('ID_PLACEHOLDER', idAnggota);
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && Object.keys(data.komponen_gaji).length > 0) {
+                // Render daftar checkbox baru
+                checkboxContainer.innerHTML = renderCheckboxes(data.komponen_gaji);
+                
+                // Tambahkan kembali listener ke checkbox yang baru
+                checkboxContainer.querySelectorAll('.komponen-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', updateSelectedCount);
+                });
+            } else {
+                checkboxContainer.innerHTML = `<div class="col-12 text-center alert alert-success">Semua komponen gaji sudah dialokasikan untuk Anggota DPR ini!</div>`;
+            }
+            updateSelectedCount(); // Update counter setelah render
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            checkboxContainer.innerHTML = `<div class="col-12 text-center alert alert-danger">Gagal memuat data komponen gaji.</div>`;
+            updateSelectedCount();
+        });
+    }
+
+    // Event listener untuk dropdown Anggota DPR
+    anggotaSelect.addEventListener('change', function() {
+        const selectedId = this.value;
+        if (selectedId) {
+            fetchUnassignedKomponen(selectedId);
+        } else {
+            checkboxContainer.innerHTML = `<div class="col-12" id="initial-message"><p class="text-center text-secondary">Silakan pilih Anggota DPR terlebih dahulu untuk menampilkan komponen gaji yang belum dialokasikan.</p></div>`;
+            updateSelectedCount();
+        }
     });
 
-    // Panggil sekali saat halaman dimuat untuk menampilkan nilai lama (jika ada error validasi)
-    updateSelectedCount();
+    // Handle kondisi saat halaman dimuat
+    if (anggotaSelect.value) {
+         fetchUnassignedKomponen(anggotaSelect.value);
+    } else {
+        updateSelectedCount();
+    }
 });
 </script>
 @endsection

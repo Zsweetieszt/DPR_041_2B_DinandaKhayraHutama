@@ -34,12 +34,31 @@ class PenggajianController extends Controller
         return view('admin.penggajian.create', compact('anggota', 'komponen_gaji'));
     }
 
+    // Mengambil daftar Komponen Gaji yang BELUM DITAMBAHKAN ke Anggota tertentu
+    public function getUnassignedKomponenGaji($id_anggota)
+    {
+        // Ambil ID komponen gaji yang SUDAH dimiliki oleh anggota ini
+        $assigned_ids = Penggajian::where('id_anggota', $id_anggota)
+                                    ->pluck('id_komponen_gaji');
+        
+        // 2. Ambil semua komponen gaji yang ID-nya TIDAK ADA dalam daftar ID yang sudah dimiliki
+        $unassigned_komponen = KomponenGaji::whereNotIn('id_komponen_gaji', $assigned_ids)
+                                            ->orderBy('kategori', 'asc')
+                                            ->orderBy('nama_komponen', 'asc')
+                                            ->get();
+
+        // Kembalikan data dalam bentuk JSON, dikelompokkan berdasarkan kategori
+        return response()->json([
+            'success' => true,
+            'komponen_gaji' => $unassigned_komponen->groupBy('kategori')
+        ]);
+    }
+
     // Menyimpan data penggajian baru (menghubungkan anggota dengan komponen gaji)
     public function store(Request $request)
     {
         $request->validate([
             'id_anggota' => 'required|exists:anggota,id_anggota',
-            // Pastikan input komponen_gaji adalah array dan ID-nya ada di tabel komponen_gaji
             'id_komponen_gaji' => 'required|array',
             'id_komponen_gaji.*' => 'exists:komponen_gaji,id_komponen_gaji', 
         ], [

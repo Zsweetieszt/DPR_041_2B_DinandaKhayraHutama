@@ -52,7 +52,9 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/', [PenggajianController::class, 'index'])->name('index'); 
 
         Route::get('/create', [PenggajianController::class, 'create'])->name('create');
-        Route::post('/', [PenggajianController::class, 'store'])->name('store');       
+        Route::post('/', [PenggajianController::class, 'store'])->name('store');
+        // Rute Baru  AJAX (Filter Komponen Gaji yang Belum Teralokasi)
+        Route::get('/get-komponen-unassigned/{id_anggota}', [PenggajianController::class, 'getUnassignedKomponenGaji'])->name('get-komponen-unassigned');       
     });
 });
 
