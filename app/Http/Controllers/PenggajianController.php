@@ -12,8 +12,6 @@ class PenggajianController extends Controller
     // Menampilkan daftar data penggajian yang dikelompokkan berdasarkan Anggota
     public function index()
     {
-        // Mengambil semua anggota dan memuat relasi penggajian mereka
-        // Kemudian mengelompokkan data komponen gaji per anggota
         $anggota = Anggota::with(['penggajian.komponen'])
             ->orderBy('id_anggota', 'asc')
             ->get();
@@ -24,30 +22,23 @@ class PenggajianController extends Controller
     // Menampilkan formulir untuk menambahkan/mengedit komponen gaji anggota
     public function create()
     {
-        // Ambil data Anggota dan Komponen Gaji untuk dropdown
         $anggota = Anggota::select('id_anggota', 'nama_depan', 'nama_belakang')
                             ->orderBy('id_anggota', 'asc')
                             ->get();
         $komponen_gaji = KomponenGaji::orderBy('nama_komponen', 'asc')->get();
-
-        // Kita akan menggunakan view yang mirip dengan KomponenGaji/create.blade.php
         return view('admin.penggajian.create', compact('anggota', 'komponen_gaji'));
     }
 
     // Mengambil daftar Komponen Gaji yang BELUM DITAMBAHKAN ke Anggota tertentu
     public function getUnassignedKomponenGaji($id_anggota)
     {
-        // Ambil ID komponen gaji yang SUDAH dimiliki oleh anggota ini
         $assigned_ids = Penggajian::where('id_anggota', $id_anggota)
                                     ->pluck('id_komponen_gaji');
         
-        // 2. Ambil semua komponen gaji yang ID-nya TIDAK ADA dalam daftar ID yang sudah dimiliki
         $unassigned_komponen = KomponenGaji::whereNotIn('id_komponen_gaji', $assigned_ids)
                                             ->orderBy('kategori', 'asc')
                                             ->orderBy('nama_komponen', 'asc')
                                             ->get();
-
-        // Kembalikan data dalam bentuk JSON, dikelompokkan berdasarkan kategori
         return response()->json([
             'success' => true,
             'komponen_gaji' => $unassigned_komponen->groupBy('kategori')
@@ -71,15 +62,12 @@ class PenggajianController extends Controller
         $id_anggota = $request->id_anggota;
         $komponen_baru = $request->id_komponen_gaji;
 
-        // Mendapatkan komponen gaji yang sudah ada untuk anggota ini
         $komponen_saat_ini = Penggajian::where('id_anggota', $id_anggota)
                                         ->pluck('id_komponen_gaji')
                                         ->toArray();
 
-        // Hitung komponen yang perlu ditambahkan (yang baru, yang belum ada)
         $komponen_untuk_ditambahkan = array_diff($komponen_baru, $komponen_saat_ini);
 
-        // Siapkan data untuk INSERT
         $data_insert = [];
         foreach ($komponen_untuk_ditambahkan as $id_komponen) {
             $data_insert[] = [
@@ -93,10 +81,8 @@ class PenggajianController extends Controller
         }
 
         try {
-            // Gunakan transaksi untuk memastikan kedua operasi (check dan insert) berjalan aman
             DB::beginTransaction();
 
-            // Masukkan data baru ke tabel penggajian
             Penggajian::insert($data_insert);
 
             DB::commit();
@@ -108,9 +94,60 @@ class PenggajianController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            // Log the error for debugging
-            // \Log::error('Gagal menambahkan penggajian: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Gagal menambahkan data penggajian. Terjadi kesalahan pada server.');
+        }
+    }
+
+    // Menampilkan formulir untuk mengedit data penggajian (mengatur komponen gaji anggota)
+    public function edit($id_anggota)
+    {
+        $anggota = Anggota::select('id_anggota', 'nama_depan', 'nama_belakang', 'jabatan')
+                            // MENGGUNAKAN RELASI komponenGaji() untuk mendapatkan assigned IDs
+                            ->with('komponenGaji') 
+                            ->where('id_anggota', $id_anggota)
+                            ->firstOrFail();
+
+        $all_komponen_gaji = KomponenGaji::orderBy('kategori', 'asc')
+                                        ->orderBy('nama_komponen', 'asc')
+                                        ->get();
+
+        $assigned_ids = $anggota->komponenGaji->pluck('id_komponen_gaji')->toArray();
+
+        return view('admin.penggajian.edit', compact('anggota', 'all_komponen_gaji', 'assigned_ids'));
+    }
+
+    // Menyimpan perubahan data penggajian (sinkronisasi komponen gaji anggota)
+    public function update(Request $request, $id_anggota)
+    {
+        $anggota = Anggota::findOrFail($id_anggota);
+
+        $request->validate([
+            'id_komponen_gaji' => 'nullable|array',
+            'id_komponen_gaji.*' => 'exists:komponen_gaji,id_komponen_gaji', 
+        ], [
+            'id_komponen_gaji.*.exists' => 'Komponen Gaji yang dipilih tidak valid.',
+        ]);
+
+        $komponen_terpilih = $request->id_komponen_gaji ?? [];
+
+        try {
+            $result = $anggota->komponenGaji()->sync($komponen_terpilih);
+            
+            $added = count($result['attached']);
+            $removed = count($result['detached']);
+            $nama_anggota = $anggota->nama_depan . ' ' . $anggota->nama_belakang;
+
+            if ($added === 0 && $removed === 0) {
+                 return redirect()->route('admin.penggajian.index')->with('info', 'Tidak ada perubahan komponen gaji untuk **' . $nama_anggota . '**.');
+            }
+            
+            $message = "Berhasil memperbarui komponen gaji untuk **{$nama_anggota}**.";
+            $message .= " ({$added} ditambahkan, {$removed} dihapus).";
+
+            return redirect()->route('admin.penggajian.index')->with('success', $message);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data penggajian. Terjadi kesalahan pada server. Detail: ' . $e->getMessage());
         }
     }
 

@@ -1,7 +1,9 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Anggota; 
 
 class KomponenGaji extends Model
 {
@@ -42,4 +44,15 @@ class KomponenGaji extends Model
     {
         return trim($value ?? ''); 
     }
+
+    public function anggota()
+    {
+        return $this->belongsToMany(
+            Anggota::class, 
+            'penggajian', 
+            'id_komponen_gaji',
+            'id_anggota'
+        );
+    }
+
 }

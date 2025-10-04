@@ -40,7 +40,10 @@
                             <a href="#" class="btn btn-sm btn-info text-white me-1" title="Lihat Detail">
                                 <i class="fas fa-eye"></i> Detail
                             </a>
-                        </td>
+                            <a href="{{ route('admin.penggajian.edit', $item->id_anggota) }}" class="btn btn-sm btn-warning me-1">
+                                <i class="fas fa-edit me-1"></i>
+                            </a>
+                        </td> 
                     </tr>
                 @endforeach
             </tbody>
