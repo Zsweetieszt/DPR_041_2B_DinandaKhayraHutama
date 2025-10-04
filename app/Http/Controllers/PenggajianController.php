@@ -151,4 +151,19 @@ class PenggajianController extends Controller
         }
     }
 
+    // Menghapus data penggajian (menghapus semua alokasi komponen gaji) untuk seorang Anggota
+    public function destroy($id_anggota)
+    {
+        $anggota = Anggota::findOrFail($id_anggota);
+        $nama_anggota = $anggota->nama_depan . ' ' . $anggota->nama_belakang;
+
+        try {
+            $anggota->komponenGaji()->detach(); 
+
+            return redirect()->route('admin.penggajian.index')->with('success', 'Semua data penggajian untuk **' . $nama_anggota . '** berhasil dihapus!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus data penggajian. Terjadi kesalahan pada server. Detail: ' . $e->getMessage());
+        }
+    }
+
 }

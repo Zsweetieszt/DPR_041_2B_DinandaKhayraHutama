@@ -43,6 +43,13 @@
                             <a href="{{ route('admin.penggajian.edit', $item->id_anggota) }}" class="btn btn-sm btn-warning me-1">
                                 <i class="fas fa-edit me-1"></i>
                             </a>
+                            <form action="{{ route('admin.penggajian.destroy', $item->id_anggota) }}" method="POST" class="d-inline form-delete-penggajian" data-nama="{{ $item->nama_depan }} {{ $item->nama_belakang }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </td> 
                     </tr>
                 @endforeach
