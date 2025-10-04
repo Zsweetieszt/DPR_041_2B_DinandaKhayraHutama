@@ -29,4 +29,11 @@ class Anggota extends Model
         $gelarBelakang = $this->gelar_belakang ? ', ' . $this->gelar_belakang : '';
         return $gelarDepan . $this->nama_depan . ' ' . $this->nama_belakang . $gelarBelakang;
     }
+
+    // Relasi One-to-Many ke tabel Penggajian
+    public function penggajian()
+    {
+        // Setiap Anggota memiliki banyak entri di tabel penggajian, diidentifikasi oleh id_anggota.
+        return $this->hasMany(Penggajian::class, 'id_anggota', 'id_anggota');
+    }
 }

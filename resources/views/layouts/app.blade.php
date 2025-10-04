@@ -92,9 +92,9 @@
                                     <i class="fas fa-list-alt"></i> Kelola Komponen Gaji
                                 </a>
                             </li>
-                            <!-- Menu Admin 3: Kelola Penggajian (Placeholder) -->
+                            <!-- Menu Admin 3: Kelola Penggajian -->
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('admin.penggajian.*') ? 'active' : '' }}" href="#">
+                                <a class="nav-link {{ request()->routeIs('admin.penggajian.*') ? 'active' : '' }}" href="{{ route('admin.penggajian.index') }}">
                                     <i class="fas fa-calculator"></i> Kelola Penggajian
                                 </a>
                             </li>

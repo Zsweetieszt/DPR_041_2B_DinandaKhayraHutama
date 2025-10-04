@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\KomponenGajiController;
+use App\Http\Controllers\PenggajianController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,11 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/{id}/edit', [KomponenGajiController::class, 'edit'])->name('edit');
         Route::put('/{id}', [KomponenGajiController::class, 'update'])->name('update');
         Route::delete('/{id}', [KomponenGajiController::class, 'destroy'])->name('destroy');
+    });
+
+    // KELOLA DATA PENGGAJIAN
+    Route::prefix('penggajian')->name('penggajian.')->group(function () {
+        Route::get('/', [PenggajianController::class, 'index'])->name('index'); 
     });
 });
 
