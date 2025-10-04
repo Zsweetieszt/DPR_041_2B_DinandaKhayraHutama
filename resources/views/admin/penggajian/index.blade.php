@@ -72,7 +72,7 @@
         </table>
     </div>
      <div class="mt-4 d-flex justify-content-center">
-        {{ $anggota->links() }}
+        {{ $anggota->links('pagination::bootstrap-5') }}
     </div>
 @endif
 @endsection

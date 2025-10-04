@@ -71,7 +71,7 @@
         </table>
     </div>
      <div class="mt-4 d-flex justify-content-center">
-        {{ $komponen->links() }}
+        {{ $komponen->links('pagination::bootstrap-5') }}
     </div>
 @endif
 
