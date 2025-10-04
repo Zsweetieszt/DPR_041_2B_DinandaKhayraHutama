@@ -50,14 +50,14 @@
                             @error('kategori')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="jabatan_khusus" class="form-label">Jabatan Khusus</label>
-                            <select name="jabatan_khusus" class="form-select @error('jabatan_khusus') is-invalid @enderror" id="jabatan_khusus" required>
+                            <label for="jabatan_komponen" class="form-label">Jabatan Khusus</label>
+                            <select name="jabatan_komponen" class="form-select @error('jabatan_komponen') is-invalid @enderror" id="jabatan_komponen" required>
                                 <option value="">-- Pilih Jabatan --</option>
                                 @foreach($jabatan_komponen as $j)
-                                    <option value="{{ $j }}" {{ old('jabatan_khusus') == $j ? 'selected' : '' }}>{{ $j }}</option>
+                                    <option value="{{ $j }}" {{ old('jabatan_komponen') == $j ? 'selected' : '' }}>{{ $j }}</option>
                                 @endforeach
                             </select>
-                            @error('jabatan_khusus')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('jabatan_komponen')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="satuan" class="form-label">Satuan</label>
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
 
-        const requiredFields = ['id_komponen_gaji', 'nama_komponen', 'kategori', 'jabatan_khusus', 'satuan', 'nilai_tetap'];
+        const requiredFields = ['id_komponen_gaji', 'nama_komponen', 'kategori', 'jabatan_komponen', 'satuan', 'nilai_tetap'];
 
         requiredFields.forEach(fieldName => {
             const input = document.getElementById(fieldName);
