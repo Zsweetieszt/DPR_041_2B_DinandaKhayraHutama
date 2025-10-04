@@ -50,6 +50,9 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     // KELOLA DATA PENGGAJIAN
     Route::prefix('penggajian')->name('penggajian.')->group(function () {
         Route::get('/', [PenggajianController::class, 'index'])->name('index'); 
+
+        Route::get('/create', [PenggajianController::class, 'create'])->name('create');
+        Route::post('/', [PenggajianController::class, 'store'])->name('store');       
     });
 });
 
