@@ -32,7 +32,7 @@
         <table class="table table-hover table-striped table-bordered align-middle">
             <thead class="table-primary">
                 <tr>
-                    <th>ID</th>
+                    <th>ID Anggota</th>
                     <th>Nama Lengkap</th>
                     <th>Jabatan</th>
                     <th>Status Kawin</th>
