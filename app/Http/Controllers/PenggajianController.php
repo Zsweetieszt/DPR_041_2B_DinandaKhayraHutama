@@ -165,5 +165,4 @@ class PenggajianController extends Controller
             return back()->with('error', 'Gagal menghapus data penggajian. Terjadi kesalahan pada server. Detail: ' . $e->getMessage());
         }
     }
-
 }

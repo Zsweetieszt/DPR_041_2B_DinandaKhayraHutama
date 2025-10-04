@@ -60,8 +60,6 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
         Route::put('/{id_anggota}', [PenggajianController::class, 'update'])->name('update');
 
         Route::delete('/{id_anggota}', [PenggajianController::class, 'destroy'])->name('destroy');
-
-
     });
 });
 
