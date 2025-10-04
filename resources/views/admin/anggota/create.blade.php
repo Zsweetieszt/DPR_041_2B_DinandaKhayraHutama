@@ -27,7 +27,7 @@
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="id_anggota" class="form-label">ID Anggota</label>
-                            <input type="text" name="id_anggota" class="form-control @error('id_anggota') is-invalid @enderror" id="id_anggota" value="{{ old('id_anggota') }}" required>
+                            <input type="number" name="id_anggota" class="form-control @error('id_anggota') is-invalid @enderror" id="id_anggota" value="{{ old('id_anggota') }}" required>
                             @error('id_anggota')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-8 mb-3">

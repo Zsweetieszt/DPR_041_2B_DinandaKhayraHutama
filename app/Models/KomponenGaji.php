@@ -14,22 +14,31 @@ class KomponenGaji extends Model
         'id_komponen_gaji',
         'nama_komponen',
         'kategori',
-        'jabatan_komponen', 
-        'nilai_tetap',
+        'jabatan', 
+        'nominal',
         'satuan',
     ];
 
     protected $casts = [
-        'nilai_tetap' => 'float',
+        'nominal' => 'float',
     ];
 
     public function getNilaiTetapFormattedAttribute()
     {
-        return 'Rp ' . number_format($this->nilai_tetap, 2, ',', '.');
+        return 'Rp ' . number_format($this->nominal, 2, ',', '.');
     }
     
-    // Memastikan nilai ENUM di-trim (jika ada whitespace tak terlihat)
-    public function getJabatanKomponenAttribute($value)
+    public function getNilaiTetapAttribute()
+    {
+        return $this->attributes['nominal'];
+    }
+    
+    public function getJabatanKomponenAttribute()
+    {
+        return trim($this->attributes['jabatan'] ?? ''); 
+    }
+    
+    public function getJabatanAttribute($value)
     {
         return trim($value ?? ''); 
     }

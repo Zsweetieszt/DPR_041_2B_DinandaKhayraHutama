@@ -16,12 +16,8 @@ class Pengguna extends Authenticatable
     // Primary key
     protected $primaryKey = 'id_pengguna';
     
-    // Non-incrementing key (sesuai skema)
+    // Non-incrementing key
     public $incrementing = false;
-    
-    // --- TAMBAHKAN BARIS INI ---
-    public $timestamps = false;
-    // ---------------------------
     
     // Kolom yang dapat diisi
     protected $fillable = [
@@ -40,7 +36,7 @@ class Pengguna extends Authenticatable
         'remember_token',
     ];
     
-    // Override kolom autentikasi default (Laravel menggunakan 'email' secara default)
+    // Override kolom autentikasi default
     public function getAuthIdentifierName()
     {
         return 'username';

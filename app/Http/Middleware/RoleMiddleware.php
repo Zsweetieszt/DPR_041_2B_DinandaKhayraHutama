@@ -22,8 +22,7 @@ class RoleMiddleware
             } elseif (Auth::user()->role === 'Public') {
                 return redirect()->route('public.dashboard');
             }
-            // Fallback ke halaman 403 jika role tidak dikenali
-            abort(403, 'Unauthorized. Akses dibatasi untuk role: ' . $role);
+
         }
 
         return $next($request);
