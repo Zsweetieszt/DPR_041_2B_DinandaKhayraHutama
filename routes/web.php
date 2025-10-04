@@ -43,8 +43,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
         
         Route::get('/{id}/edit', [KomponenGajiController::class, 'edit'])->name('edit');
         Route::put('/{id}', [KomponenGajiController::class, 'update'])->name('update');
-
-
+        Route::delete('/{id}', [KomponenGajiController::class, 'destroy'])->name('destroy');
     });
 });
 

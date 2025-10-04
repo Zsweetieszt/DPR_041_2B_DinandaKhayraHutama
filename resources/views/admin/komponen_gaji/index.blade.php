@@ -41,7 +41,7 @@
                             <a href="{{ route('admin.komponen.edit', $item->id_komponen_gaji) }}" class="btn btn-sm btn-warning me-1" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <form action="#" method="POST" class="d-inline form-delete-komponen" data-nama="{{ $item->nama_komponen }}">
+                            <form action="{{ route('admin.komponen.destroy', $item->id_komponen_gaji) }}" method="POST" class="d-inline form-delete-komponen" data-nama="{{ $item->nama_komponen }}">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger" title="Hapus">

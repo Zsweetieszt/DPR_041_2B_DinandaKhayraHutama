@@ -124,4 +124,29 @@ class KomponenGajiController extends Controller
 
         return redirect()->route('admin.komponen.index')->with('success', 'Komponen Gaji berhasil diperbarui!');
     }
+
+    // Menghapus data Komponen Gaji dari database (Delete)
+    public function destroy($id)
+    {
+        $komponen = KomponenGaji::find($id);
+
+        if (!$komponen) {
+            return back()->with('error', 'Komponen Gaji tidak ditemukan.');
+        }
+
+        try {
+            $komponen->delete();
+            return redirect()->route('admin.komponen.index')->with('success', 'Komponen Gaji "' . $komponen->nama_komponen . '" berhasil dihapus!');
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Error handling untuk relasi foreign key
+            $errorCode = $e->errorInfo[1];
+            if ($errorCode == 23503) { 
+                return back()->with('error', 'Gagal menghapus! Komponen Gaji "' . $komponen->nama_komponen . '" sudah terhubung dengan data penggajian, hapus data penggajian terlebih dahulu.');
+            }
+            return back()->with('error', 'Gagal menghapus Komponen Gaji: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
 }
