@@ -38,7 +38,6 @@ class KomponenGajiController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            // ID unik saat buat baru
             'id_komponen_gaji' => 'required|numeric|unique:komponen_gaji,id_komponen_gaji',
             'nama_komponen' => 'required|string|max:100',
             'kategori' => 'required|in:' . implode(',', $this->kategori),
@@ -53,7 +52,6 @@ class KomponenGajiController extends Controller
             'satuan.in' => 'Satuan komponen tidak valid.',
         ]);
         
-        // Mapping data dari nama field form ke nama kolom DB yang benar
         $dataToStore = [
             'id_komponen_gaji' => $validatedData['id_komponen_gaji'],
             'nama_komponen' => $validatedData['nama_komponen'],
@@ -75,25 +73,20 @@ class KomponenGajiController extends Controller
     // Menampilkan form edit Komponen Gaji
     public function edit($id)
     {
-        // Mendapatkan data komponen gaji berdasarkan ID
         $komponen = KomponenGaji::findOrFail($id);
         $kategori = $this->kategori;
         $jabatan_komponen = $this->jabatan_komponen_values;
         $satuan = $this->satuan;
 
-        // Mengirim semua data ke view edit
         return view('admin.komponen_gaji.edit', compact('komponen', 'kategori', 'jabatan_komponen', 'satuan'));
     }
 
     // Memperbarui data Komponen Gaji di database (Update)
     public function update(Request $request, $id)
     {
-        // Cari data lama
         $komponen = KomponenGaji::findOrFail($id);
 
-        // Validasi data
         $validatedData = $request->validate([
-            // ID tidak perlu divalidasi unik karena tidak diubah (readonly)
             'nama_komponen' => 'required|string|max:100',
             'kategori' => 'required|in:' . implode(',', $this->kategori),
             'jabatan_komponen' => 'required|in:' . implode(',', $this->jabatan_komponen_values),
@@ -107,7 +100,6 @@ class KomponenGajiController extends Controller
             'satuan.in' => 'Satuan komponen tidak valid.',
         ]);
 
-        // Mapping data dari nama field form ke nama kolom DB yang benar
         $dataToUpdate = [
             'nama_komponen' => $validatedData['nama_komponen'],
             'kategori' => $validatedData['kategori'],

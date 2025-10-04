@@ -33,11 +33,10 @@
                         <td>{{ $item->nama_depan }} {{ $item->nama_belakang }}</td>
                         <td><span class="badge bg-secondary">{{ $item->jabatan }}</span></td>
                         <td>
-                            {{-- Menghitung jumlah komponen gaji yang terkait dengan anggota ini --}}
                             <span class="badge bg-info text-dark">{{ $item->penggajian->count() }} Komponen</span>
                         </td>
                         <td>
-                            <a href="#" class="btn btn-sm btn-info text-white me-1" title="Lihat Detail">
+                            <a href="{{ route('admin.penggajian.show', $item->id_anggota) }}" class="btn btn-sm btn-info text-white me-1" title="Lihat Detail">
                                 <i class="fas fa-eye"></i> Detail
                             </a>
                             <a href="{{ route('admin.penggajian.edit', $item->id_anggota) }}" class="btn btn-sm btn-warning me-1">
