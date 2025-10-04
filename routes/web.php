@@ -40,7 +40,11 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/', [KomponenGajiController::class, 'index'])->name('index');
         Route::get('/create', [KomponenGajiController::class, 'create'])->name('create');
         Route::post('/', [KomponenGajiController::class, 'store'])->name('store');
-        // Edit, Update, Destroy akan ditambahkan di commit berikutnya
+        
+        Route::get('/{id}/edit', [KomponenGajiController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [KomponenGajiController::class, 'update'])->name('update');
+
+
     });
 });
 

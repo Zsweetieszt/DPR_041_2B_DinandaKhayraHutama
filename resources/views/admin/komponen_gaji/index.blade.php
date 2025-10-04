@@ -38,7 +38,7 @@
                         <td>{{ $item->nilai_tetap_formatted }}</td>
                         <td>{{ $item->satuan }}</td>
                         <td>
-                            <a href="#" class="btn btn-sm btn-warning me-1" title="Edit">
+                            <a href="{{ route('admin.komponen.edit', $item->id_komponen_gaji) }}" class="btn btn-sm btn-warning me-1" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <form action="#" method="POST" class="d-inline form-delete-komponen" data-nama="{{ $item->nama_komponen }}">
