@@ -6,7 +6,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="fas fa-address-card me-2 text-primary"></i> Transparansi Data Anggota DPR</h2>
     <div class="info-badge">
-        <span class="badge bg-primary fs-6">Akses Publik (Read Only)</span>
+        <span class="badge bg-primary fs-6">Akses Publik</span>
     </div>
 </div>
 

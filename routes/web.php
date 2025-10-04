@@ -79,4 +79,10 @@ Route::middleware(['auth', 'role:Public'])->prefix('public')->name('public.')->g
     // Read Only Anggota DPR
     Route::get('/anggota', [AnggotaController::class, 'publicIndex'])->name('anggota.index');
     Route::get('/anggota/{anggota}', [AnggotaController::class, 'show'])->name('anggota.show');
+
+    Route::prefix('transparansi-gaji')->name('transparansi.')->group(function () {
+        Route::get('/', [PenggajianController::class, 'publicIndex'])->name('index');
+        Route::get('/{id_anggota}', [PenggajianController::class, 'publicShow'])->name('show');
+    });
+
 });

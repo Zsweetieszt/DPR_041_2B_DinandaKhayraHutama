@@ -47,15 +47,6 @@
                     <div class="col-md-7 mb-3">
                         {{ $anggota->status_pernikahan }}
                     </div>
-                    
-                    <div class="col-md-5 text-md-end mb-3">
-                        <strong>Jumlah Anak:</strong>
-                    </div>
-                    <div class="col-md-7 mb-3">
-                        {{ $anggota->jumlah_anak ?? 0 }} Anak
-                    </div>
-                    
-                    {{-- Di sini nanti akan ditambahkan Rincian Gaji --}}
                 </div>
                 
                 <hr>

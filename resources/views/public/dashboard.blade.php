@@ -10,10 +10,10 @@
         <p class="lead">Aplikasi ini menyajikan data anggota DPR dan informasi penggajian secara transparan (Read Only).</p>
         <hr class="my-4">
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <a href="#" class="btn btn-primary btn-lg px-4 me-sm-3">
+            <a href="{{ route('public.anggota.index') }}" class="btn btn-primary btn-lg px-4 me-sm-3">
                 <i class="fas fa-address-card me-2"></i> Lihat Anggota DPR
             </a>
-            <a href="#" class="btn btn-outline-secondary btn-lg px-4">
+            <a href="{{ route('public.transparansi.index') }}" class="btn btn-outline-secondary btn-lg px-4">
                 <i class="fas fa-calculator me-2"></i> Lihat Data Gaji
             </a>
         </div>

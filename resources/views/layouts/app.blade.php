@@ -110,9 +110,9 @@
                                     <i class="fas fa-address-card"></i> Data Anggota
                                 </a>
                             </li>
-                            <!-- Menu Public: Data Gaji (Placeholder) -->
+                            <!-- Menu Public: Data Gaji-->
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('public.gaji.index') ? 'active' : '' }}" href="#">
+                                <a class="nav-link {{ request()->routeIs('public.transparansi.index') ? 'active' : '' }}" href="{{ route('public.transparansi.index') }}">
                                     <i class="fas fa-dollar-sign"></i> Transparansi Gaji
                                 </a>
                             </li>

@@ -214,4 +214,66 @@ class PenggajianController extends Controller
 
         return view('admin.penggajian.show', compact('anggota', 'grouped_komponen', 'calculation_summary', 'komponen_list'));
     }
+
+    /**
+     * Menampilkan daftar Anggota DPR yang memiliki alokasi gaji (Read Only).
+     */
+    public function publicIndex()
+    {
+        // Ambil Anggota yang memiliki relasi penggajian (yaitu, Anggota yang memiliki alokasi gaji)
+        $anggota = Anggota::whereHas('penggajian') // Filter Anggota yang punya data di tabel penggajian
+                            ->with('penggajian') 
+                            ->orderBy('id_anggota', 'asc')
+                            ->get();
+
+        return view('public.transparansi_gaji.index', compact('anggota'));
+    }
+
+    // Menampilkan detail data penggajian dan perhitungan gaji untuk satu Anggota (Read Only).
+    public function publicShow($id_anggota)
+    {
+        $anggota = Anggota::select('id_anggota', 'nama_depan', 'nama_belakang', 'jabatan', 'gelar_depan', 'gelar_belakang')
+                            ->with('komponenGaji') 
+                            ->where('id_anggota', $id_anggota)
+                            ->firstOrFail();
+
+        $komponen_list = $anggota->komponenGaji;
+
+        $total_gaji_pokok_bulanan = 0;
+        $total_tunjangan_melekat_bulanan = 0;
+        $total_tunjangan_lain_bulanan = 0;
+        $total_tunjangan_periodik = 0;
+
+        $grouped_komponen = $komponen_list->groupBy('kategori');
+        
+        foreach ($komponen_list as $komponen) {
+            $nominal = $komponen->nominal;
+            $satuan = $komponen->satuan;
+            $kategori = $komponen->kategori;
+
+            if ($satuan === 'Bulan') {
+                if ($kategori === 'Gaji Pokok') {
+                    $total_gaji_pokok_bulanan += $nominal;
+                } elseif ($kategori === 'Tunjangan Melekat') {
+                    $total_tunjangan_melekat_bulanan += $nominal;
+                } elseif ($kategori === 'Tunjangan Lain') {
+                    $total_tunjangan_lain_bulanan += $nominal;
+                }
+            } elseif ($satuan === 'Periode') {
+                $total_tunjangan_periodik += $nominal;
+            }
+        }
+        
+        $total_gaji_bulanan_final = $total_gaji_pokok_bulanan + $total_tunjangan_melekat_bulanan + $total_tunjangan_lain_bulanan;
+
+        $calculation_summary = [
+            'total_gaji_pokok_bulanan' => $total_gaji_pokok_bulanan,
+            'total_tunjangan_melekat_bulanan' => $total_tunjangan_melekat_bulanan,
+            'total_tunjangan_lain_bulanan' => $total_tunjangan_lain_bulanan,
+            'total_gaji_bulanan_final' => $total_gaji_bulanan_final,
+            'total_tunjangan_periodik' => $total_tunjangan_periodik,
+        ];
+
+        return view('public.transparansi_gaji.show', compact('anggota', 'grouped_komponen', 'calculation_summary', 'komponen_list'));
+    }
 }
