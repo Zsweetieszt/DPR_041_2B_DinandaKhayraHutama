@@ -9,15 +9,29 @@ use Illuminate\Support\Facades\DB;
 
 class PenggajianController extends Controller
 {
+    private function getAnggotaSearchQuery($search)
+    {
+        return Anggota::query()
+            ->when($search, function ($query, $search) {
+                $query->where(DB::raw("CONCAT(COALESCE(gelar_depan, ''), ' ', nama_depan, ' ', nama_belakang, COALESCE(gelar_belakang, ''))"), 'ILIKE', "%{$search}%")
+                      ->orWhere('jabatan', 'ILIKE', "%{$search}%")
+                      ->orWhere('id_anggota', 'ILIKE', "%{$search}%");
+            });
+    }
+
     // Menampilkan daftar data penggajian yang dikelompokkan berdasarkan Anggota
     public function index()
     {
-        $anggota = Anggota::with(['penggajian.komponen'])
+        $search = request('search');
+        
+        $anggota = $this->getAnggotaSearchQuery($search)
+            ->with(['penggajian.komponen'])
             ->orderBy('id_anggota', 'asc')
-            ->get();
+            ->paginate(10); 
 
-        return view('admin.penggajian.index', compact('anggota'));
+        return view('admin.penggajian.index', compact('anggota', 'search'));
     }
+
 
     // Menampilkan formulir untuk menambahkan/mengedit komponen gaji anggota
     public function create()
@@ -220,8 +234,8 @@ class PenggajianController extends Controller
      */
     public function publicIndex()
     {
-        // Ambil Anggota yang memiliki relasi penggajian (yaitu, Anggota yang memiliki alokasi gaji)
-        $anggota = Anggota::whereHas('penggajian') // Filter Anggota yang punya data di tabel penggajian
+        // Ambil Anggota yang memiliki relasi penggajian
+        $anggota = Anggota::whereHas('penggajian')
                             ->with('penggajian') 
                             ->orderBy('id_anggota', 'asc')
                             ->get();

@@ -10,9 +10,25 @@
     </a>
 </div>
 
+<div class="mb-4">
+    <form action="{{ route('admin.penggajian.index') }}" method="GET" class="d-flex">
+        <input type="text" name="search" class="form-control me-2" placeholder="Cari nama, ID, atau jabatan anggota..." value="{{ request('search') }}">
+        <button class="btn btn-danger" type="submit">
+            <i class="fas fa-search"></i> Cari
+        </button>
+        @if(request('search'))
+            <a href="{{ route('admin.penggajian.index') }}" class="btn btn-outline-secondary ms-2">Reset</a>
+        @endif
+    </form>
+</div>
+
 @if($anggota->isEmpty())
     <div class="alert alert-info text-center">
-        Belum ada data Anggota DPR.
+        @if(request('search'))
+            Tidak ditemukan data Anggota DPR yang sesuai dengan pencarian: "**{{ request('search') }}**".
+        @else
+            Belum ada data Anggota DPR.
+        @endif
     </div>
 @else
     <div class="table-responsive">
@@ -54,6 +70,9 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+     <div class="mt-4 d-flex justify-content-center">
+        {{ $anggota->links() }}
     </div>
 @endif
 @endsection

@@ -12,17 +12,29 @@ class KomponenGajiController extends Controller
     private $jabatan_komponen_values = ['Ketua', 'Wakil Ketua', 'Anggota', 'Semua']; 
     private $satuan = ['Bulan', 'Hari', 'Periode'];
 
-    // Menampilkan daftar semua Komponen Gaji (Read)
+    // Menampilkan daftar semua Komponen Gaji
     public function index()
     {
-        $komponen = KomponenGaji::orderBy('id_komponen_gaji', 'asc')->get();
+        $search = request('search');
+        
+        $komponen = KomponenGaji::query()
+            ->when($search, function ($query, $search) {
+                $query->where('id_komponen_gaji', 'ILIKE', "%{$search}%")
+                      ->orWhere('nama_komponen', 'ILIKE', "%{$search}%")
+                      ->orWhere('kategori', 'ILIKE', "%{$search}%")
+                      ->orWhere('jabatan', 'ILIKE', "%{$search}%")
+                      ->orWhere('satuan', 'ILIKE', "%{$search}%");
+            })
+            ->orderBy('id_komponen_gaji', 'asc')
+            ->paginate(10);
         
         $kategori = $this->kategori;
         $jabatan_komponen = $this->jabatan_komponen_values; 
         $satuan = $this->satuan;
 
-        return view('admin.komponen_gaji.index', compact('komponen', 'kategori', 'jabatan_komponen', 'satuan'));
+        return view('admin.komponen_gaji.index', compact('komponen', 'kategori', 'jabatan_komponen', 'satuan', 'search'));
     }
+
 
     // Menampilkan form untuk menambah Komponen Gaji baru
     public function create()
